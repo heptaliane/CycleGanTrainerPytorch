@@ -9,13 +9,17 @@ from .model_writer import BestModelWriter, LocalBestModelWriter, \
 
 
 class CycleGanTrainer():
-    def __init__(self, save_dir, train_loader, test_loader, gen_a2b, gen_b2a,
+    def __init__(self, save_dir, train_loader_a, train_loader_b,
+                 test_loader_a, test_loader_b,
+                 gen_a2b, gen_b2a,
                  dis_a, dis_b, gen_optimizer=None, dis_optimizer=None,
                  label_a=None, label_b=None, device=None, interval=50,
                  evaluator=None):
         self.device = torch.device('cpu') if device is None else device
-        self.train_iter = LoopIterator(train_loader)
-        self.test_iter = LoopIterator(test_loader)
+        self.train_iter_a = LoopIterator(train_loader_a)
+        self.train_iter_b = LoopIterator(train_loader_b)
+        self.test_iter_a = LoopIterator(test_loader_a)
+        self.test_iter_b = LoopIterator(test_loader_b)
         self.gen_a2b = gen_a2b
         self.gen_b2a = gen_b2a
         self.dis_a2b = dis_a2b
@@ -190,9 +194,9 @@ class CycleGanTrainer():
             'gen_b2b_loss': gen_b2b_loss.item(),
         }, (a2b.detach().cpu(), b2a.detach().cpu())
 
-    def _forward(self, inp, backward):
-        a = inp.get('a').to(device=self.device)
-        b = inp.get('b').to(device=self.device)
+    def _forward(self, inp_a, inp_b, backward):
+        a = inp_a.to(device=self.device)
+        b = inp_b.to(device=self.device)
         loss = dict()
 
         if self.dis_optimizer is not None:
@@ -219,8 +223,9 @@ class CycleGanTrainer():
 
         avg_loss = {k: 0.0 for k in self._loss_keys}
         for _ in tqdm(range(n_train // self.batch_size)):
-            data = next(self.train_iter)
-            loss, _ = self._forward(data, True)
+            inp_a = next(self.train_iter_a)
+            inp_b = next(self.train_iter_b)
+            loss, _ = self._forward(inp_a, inp_b, True)
             for k, v in loss.items():
                 avg_loss[k] += v
 
@@ -234,10 +239,11 @@ class CycleGanTrainer():
 
         preds = list()
         avg_loss = {k: 0.0 for k in self._loss_keys}
-        n_test = len(self.test_iter)
+        n_test = min(len(self.test_iter_a), len(self.test_iter_b))
         for _ in tqdm(range(n_test)):
-            data = next(self.test_iter)
-            loss, pred = self._forward(data, False)
+            inp_a = next(self.test_iter_a)
+            inp_b = next(self.test_iter_b)
+            loss, pred = self._forward(inp_a, inp_b, False)
             for k, v in loss.items():
                 avg_loss[k] += v
 

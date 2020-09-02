@@ -41,3 +41,29 @@ def load_pretrained_model(model, pretrained_path):
             state[k] = _reshape_state_dict(src[k], dst[k])
 
     model.load_state_dict(state)
+
+
+def create_generator(arch, in_ch, out_ch, pretrained_path=None **kwargs):
+    if arch.lower() == 'unet':
+        model = UNet(in_ch, out_ch, **kwargs)
+    elif arch.lower() == 'resnet':
+        model = ResNet(in_ch, out_ch, **kwargs)
+    else:
+        raise NotImplementedError('"%s" is not Implemented' % arch)
+
+    if pretrained is not None:
+        load_pretrained_model(model, pretrained_path)
+
+    return model
+
+
+def create_discriminator(arch, in_ch, pretrained_path=None, **kwargs):
+    if arch.lower() == 'patch':
+        model = PatchDiscriminator(in_ch, **kwargs)
+    else:
+        raise NotImplementedError('"%s" is not Implemented' % arch)
+
+    if pretrained is not None:
+        load_pretrained_model(model, pretrained_path)
+
+    return model

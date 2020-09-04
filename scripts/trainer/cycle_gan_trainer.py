@@ -155,11 +155,7 @@ class CycleGanTrainer():
                                      device=self.device)
         gen_b2a_loss = self.dis_loss(judge_b2a, real_label)
 
-        gen_gan_loss = gen_a2b_loss.item() + gen_b2a_loss.item()
-
-        if backward:
-            gen_a2b_loss.backward()
-            gen_b2a_loss.backward()
+        gen_gan_loss = gen_a2b_loss + gen_b2a_loss
 
         # Cycle loss
         a2b2a = self.gen_b2a.forward(a2b)
@@ -167,11 +163,7 @@ class CycleGanTrainer():
         gen_a2b2a_loss = self.gen_loss(a2b2a, inp_a)
         gen_b2a2b_loss = self.gen_loss(b2a2b, inp_b)
 
-        gen_cycle_loss = gen_a2b2a_loss.item() + gen_b2a2b_loss.item()
-
-        if backward:
-            gen_a2b2a_loss.backward()
-            gen_b2a2b_loss.backward()
+        gen_cycle_loss = gen_a2b2a_loss + gen_b2a2b_loss
 
         # Identity loss
         a = self.gen_b2a.forward(inp_a)
@@ -179,18 +171,19 @@ class CycleGanTrainer():
         gen_a2a_loss = self.gen_loss(a, inp_a)
         gen_b2b_loss = self.gen_loss(b, inp_b)
 
-        gen_identity_loss = gen_a2a_loss.item() + gen_b2b_loss.item()
+        gen_identity_loss = gen_a2a_loss + gen_b2b_loss
+
+        gen_loss = gen_gan_loss + gen_cycle_loss + gen_identity_loss
 
         if backward:
-            gen_a2a_loss.backward()
-            gen_b2b_loss.backward()
+            gen_loss.backward()
             self.gen_optimizer.step()
 
         return {
-            'gen_loss': gen_gan_loss + gen_cycle_loss + gen_identity_loss,
-            'gen_gan_loss': gen_gan_loss,
-            'gen_cycle_loss': gen_cycle_loss,
-            'gen_identity_loss': gen_identity_loss,
+            'gen_loss': gen_loss.item(),
+            'gen_gan_loss': gen_gan_loss.item(),
+            'gen_cycle_loss': gen_cycle_loss.item(),
+            'gen_identity_loss': gen_identity_loss.item(),
             'gen_a2b_loss': gen_a2b_loss.item(),
             'gen_b2a_loss': gen_b2a_loss.item(),
             'gen_a2b2a_loss': gen_a2b2a_loss.item(),

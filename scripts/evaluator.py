@@ -31,7 +31,7 @@ class CycleGanImageEvaluator():
             self.offset = 0
 
         n, _, h, w = a1.shape
-        thumb = torch.zeros((n, 3, h * 2, w * 2), torch.float32)
+        thumb = torch.zeros((n, 3, h * 2, w * 2), dtype=torch.float32)
         thumb[:, :, 0:h, 0:w] = a1
         thumb[:, :, h:h * 2, 0:w] = b1
         thumb[:, :, 0:h, w:w * 2] = a2

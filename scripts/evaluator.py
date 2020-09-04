@@ -3,7 +3,6 @@ import os
 
 import torch
 from torchvision.transforms import ToPILImage
-from PIL import Image
 
 
 class CycleGanImageEvaluator():
@@ -18,20 +17,8 @@ class CycleGanImageEvaluator():
         tensor.clamp_(min=tmin, max=tmax)
         return tensor.add_(-tmin).div(tmax - tmin + 1e-5)
 
-    def _create_thumbnail(self, org_a, org_b, dst_a, dst_b, dst_path, offset=0):
-        n, _, h, w = org_a.shape
-        thumb = torch.zeros((n, 3, h * 2, w * 2), np.float32)
-        thumb[:, :, 0:h, 0:w] = org_a
-        thumb[:, :, h:h * 2, 0:w] = org_b
-        thumb[:, :, 0:h, w:w * 2] = dst_a
-        thumb[:, :, h:h * 2, w:w * 2] = dst_b
-
-        for i in range(n):
-            img = self.tensor_to_image(thumb[i])
-            img.save(os.path.join(dst_dir, 'test_result_idx_%03d.jpg' % offset + i))
-
     def __call__(self, inp_a, inp_b, out_a, out_b, epoch):
-        if self.interval <~ 0:
+        if self.interval <= 0:
             dst_dir = os.path.join(self.save_dir, 'latest')
         elif epoch % self.interval == 0:
             dst_dir = os.path.join(self.save_dir, 'epoch_%04d' % epoch)
@@ -50,4 +37,4 @@ class CycleGanImageEvaluator():
             dst_path = os.path.join(dst_dir, 'test_result_idx_%03d.jpg')
             for j in range(n):
                 img = self.tensor_to_image(thumb[i])
-                thumb.save(dst_path % (i * n + j))
+                img.save(dst_path % (i * n + j))

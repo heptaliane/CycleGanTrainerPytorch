@@ -195,7 +195,6 @@ class CycleGanTrainer():
     def _forward(self, inp_a, inp_b, backward):
         a = inp_a.to(device=self.device)
         b = inp_b.to(device=self.device)
-        loss = dict()
 
         if self.dis_optimizer is not None:
             dis_a_loss = self._forward_discriminator(b, a, self.gen_b2a,
@@ -232,7 +231,7 @@ class CycleGanTrainer():
             self.logger.add_scalar('train_%s' % k, avg_loss[k], self.epoch)
             logger.info('train_%s: %f', k, avg_loss[k])
 
-    def _test_step(self, n_train):
+    def _test_step(self):
         self._eval()
 
         preds = list()

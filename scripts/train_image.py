@@ -86,11 +86,11 @@ def setup_model(config):
     out_ch = gen_conf.get('out_ch')
 
     gen_a2b = create_generator(arch, in_ch, out_ch,
-                           gen_conf['pretrained']['a2b'],
-                           **gen_conf['kwargs'])
+                               gen_conf['pretrained']['a2b'],
+                               **gen_conf['kwargs'])
     gen_b2a = create_generator(arch, out_ch, in_ch,
-                           gen_conf['pretrained']['b2a'],
-                           **gen_conf['kwargs'])
+                               gen_conf['pretrained']['b2a'],
+                               **gen_conf['kwargs'])
 
     # Create discriminator
     arch = dis_conf.get('arch')
@@ -121,11 +121,14 @@ def setup_model(config):
     }
 
 
-def setup_trainer(config, save_dir, device, datasets, models):
+def setup_trainer(config, save_dir, device, datasets, models, labels):
     evaluator = CycleGanImageEvaluator(save_dir,
                                        config['save_interval']['evaluate'])
     interval = config['save_interval']['model']
+    lbl_a = '%s2%s' % (labels[0], labels[1])
+    lbl_b = '%s2%s' % (labels[1], labels[0])
     trainer = CycleGanTrainer(save_dir, **datasets, **models,
+                              label_a=lbl_a, label_b=lbl_b,
                               device=device, evaluator=evaluator,
                               interval=interval)
 

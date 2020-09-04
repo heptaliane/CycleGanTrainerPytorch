@@ -60,7 +60,7 @@ class RegularModelWriter():
         os.makedirs(save_dir, exist_ok=True)
 
     def __call__(self, model, epoch):
-        if epoch % self.interval == 0:
+        if epoch % self.interval != 0:
             return
 
         x = epoch // self.interval

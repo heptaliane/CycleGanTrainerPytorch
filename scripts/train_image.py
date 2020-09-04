@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import time
 import argparse
 
 from torch.utils.data import DataLoader
 from torch.optim import Adam
 
 from config import load_config
+from common import write_json
 from dataset import ImageDataset, setup_image_transform
 from model import create_generator, create_discriminator
 from trainer import CycleGanTrainer
@@ -129,9 +131,14 @@ def main(argv):
     args = parse_arguments(argv)
     config = load_config(args.config)
 
+    ctime = time.strftime('%y%m%d_%H%M')
+    dst_dir = os.path.join(args.output_dir, '%s_%s2%s' % (ctime, *args.labels))
+    os.makedirs(dst_dir, exist_ok=True)
+    write_json(os.path.join(dst_dir, 'config.json'), config)
+
     datasets = setup_dataset(config, args.labels[0], args.labels[1])
     models = setup_model(config)
-    trainer = setup_trainer(config, args.output_dir, args.gpu,
+    trainer = setup_trainer(config, dst_dir, args.gpu,
                             datasets, models)
     trainer.run(1000, args.max_epoch)
 

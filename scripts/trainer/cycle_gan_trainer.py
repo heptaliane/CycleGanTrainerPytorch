@@ -234,7 +234,6 @@ class CycleGanTrainer():
     def _test_step(self):
         self._eval()
 
-        preds = list()
         avg_loss = {k: 0.0 for k in self._loss_keys}
         n_test = min(len(self.test_iter_a), len(self.test_iter_b))
         for _ in tqdm(range(n_test)):
@@ -243,6 +242,8 @@ class CycleGanTrainer():
             loss, pred = self._forward(inp_a, inp_b, False)
             for k, v in loss.items():
                 avg_loss[k] += v
+            if self.evaluator is not None:
+                self.evaluator(inp_a, inp_b, *pred, self.epoch)
 
         for k in avg_loss.keys():
             avg_loss[k] = avg_loss[k] / n_test
@@ -250,8 +251,6 @@ class CycleGanTrainer():
             logger.info('test_%s: %f', k, avg_loss[k])
 
         self._save_models(avg_loss)
-        if self.evaluator is not None:
-            self.evaluator(preds, self.epoch)
 
     def run(self, n_train, max_epoch=-1):
         while True:

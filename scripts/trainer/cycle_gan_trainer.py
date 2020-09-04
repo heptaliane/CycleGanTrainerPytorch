@@ -25,10 +25,10 @@ class CycleGanTrainer():
         self.train_iter_b = LoopIterator(train_loader_b)
         self.test_iter_a = LoopIterator(test_loader_a)
         self.test_iter_b = LoopIterator(test_loader_b)
-        self.gen_a2b = gen_a2b
-        self.gen_b2a = gen_b2a
-        self.dis_a2b = dis_a2b
-        self.dis_b2a = dis_b2a
+        self.gen_a2b = gen_a2b.to(self.device)
+        self.gen_b2a = gen_b2a.to(self.device)
+        self.dis_a2b = dis_a2b.to(self.device)
+        self.dis_b2a = dis_b2a.to(self.device)
         self.gen_optimizer = gen_optimizer
         self.dis_optimizer = dis_optimizer
         self.dis_loss = torch.nn.BCELoss()

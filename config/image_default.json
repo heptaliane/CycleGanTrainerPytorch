@@ -64,5 +64,5 @@
     "evaluate": 1,
     "model": 50
   },
-  "img_size": [450, 800]
+  "img_size": [468, 832]
 }

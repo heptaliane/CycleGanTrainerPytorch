@@ -249,7 +249,7 @@ class CycleGanTrainer():
             self.logger.add_scalar('test_%s' % k, avg_loss[k], self.epoch)
             logger.info('test_%s: %f', k, avg_loss[k])
 
-        self.save_models(avg_loss)
+        self._save_models(avg_loss)
         if self.evaluator is not None:
             self.evaluator(preds, self.epoch)
 

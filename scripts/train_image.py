@@ -15,6 +15,11 @@ from model import create_generator, create_discriminator
 from trainer import CycleGanTrainer
 from evaluator import CycleGanImageEvaluator
 
+# Logging
+from logging import getLogger, StreamHandler, INFO
+logger = getLogger()
+logger.setLevel(INFO)
+logger.addHandler(StreamHandler())
 
 
 def parse_arguments(argv):

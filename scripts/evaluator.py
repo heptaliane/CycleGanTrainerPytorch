@@ -7,7 +7,7 @@ from torchvision.transforms import ToPILImage
 
 class CycleGanImageEvaluator():
     def __init__(self, save_dir, interval=0):
-        self.save_dir = os.path.join(save_dir, 'latest')
+        self.save_dir = os.path.join(save_dir, 'test_result')
         self.interval = interval
         self.offset = 0
         self.epoch = 0
@@ -29,6 +29,7 @@ class CycleGanImageEvaluator():
         if self.epoch != epoch:
             os.makedirs(dst_dir, exist_ok=True)
             self.offset = 0
+            self.epoch = epoch
 
         n, _, h, w = a1.shape
         thumb = torch.zeros((n, 3, h * 2, w * 2), dtype=torch.float32)

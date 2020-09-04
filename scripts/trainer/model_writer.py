@@ -45,7 +45,7 @@ class LocalBestModelWriter():
             'epochs': len(self._loss),
         }
 
-    def update(self, model, loss):
+    def __call__(self, model, loss):
         if loss < min(self._loss):
             torch.save(model.state_dict(), self._dst_path)
             logger.info('Save local best model (%s).', self._dst_path)

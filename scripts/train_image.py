@@ -7,8 +7,29 @@ import argparse
 from torch.utils.data import DataLoader
 from torch.optim import Adam
 
+from config import load_config
 from dataset import ImageDataset, setup_image_transform
 from model import create_generator, create_discriminator
+from trainer import CycleGanTrainer
+from evaluator import CycleGanImageEvaluator
+
+
+
+def parse_arguments(argv):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', '-c', default='config/image_default.json',
+                        help='Path to configuration file')
+    parser.add_argument('--output_dir', '--output', '--out', '-o',
+                        default='result',
+                        help='Path to output directory')
+    parser.add_argument('--gpu', '-g', type=int, default=None,
+                        help='GPU id (default is cpu)')
+    parser.add_argument('--labels', '-l', required=True, nargs='2',
+                        help='Training dataset label')
+    parser.add_argument('--max_epoch', '-m', type=int, default=-1,
+                        help='When the epoch reach this value, stop training,')
+    args = parser.parse_args()
+    return args
 
 
 def setup_dataset(config, label_a, label_b):
@@ -91,3 +112,29 @@ def setup_model(config):
         'gen_optimizer': gen_optimizer,
         'dis_optimizer': dis_optimizer,
     }
+
+
+def setup_trainer(config, save_dir, device, datasets, models):
+    evaluator = CycleGanImageEvaluator(save_dir,
+                                       config['save_interval']['evaluate'])
+    interval = config['save_interval']['model']
+    trainer = CycleGanTrainer(save_dir, **datasets, **models,
+                              device=device, evaluator=evaluator,
+                              interval=interval)
+
+    return trainer
+
+
+def main(argv):
+    args = parse_arguments(argv)
+    config = load_config(args.config)
+
+    datasets = setup_dataset(config, args.labels[0], args.labels[1])
+    models = setup_model(config)
+    trainer = setup_trainer(config, args.output_dir, args.gpu,
+                            datasets, models)
+    trainer.run(1000, args.max_epoch)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

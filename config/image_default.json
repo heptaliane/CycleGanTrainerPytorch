@@ -1,0 +1,66 @@
+{
+  "dataset": {
+    "train": {
+      "dirname": "data/train",
+      "ext": ".jpg"
+    },
+    "test": {
+      "dirname": "data/test",
+      "ext": ".jpg"
+    }
+  },
+  "trainsform": {
+    "flip": {
+      "horizontal": true,
+      "vertical": true
+    },
+    "img_size": [450, 800],
+    "scale": [0.8, 1.0],
+    "jitter": {
+      "brightness": 0.05,
+      "contrast": 0.05,
+      "saturation": 0.05,
+      "hue": 0.05
+    }
+  },
+  "loader": {
+    "batch_size": 8,
+    "num_workers": 10,
+    "pin_memory": true,
+    "drop_last": true
+  },
+  "model": {
+    "generator": {
+      "arch": "resnet",
+      "in_ch": 3,
+      "out_ch": 3,
+      "pretrained": {
+        "a2b": null,
+        "b2a": null
+      },
+      "kwargs": {
+      }
+    },
+    "discriminator": {
+      "arch": "patch",
+      "pretrained": {
+        "a2b": null,
+        "b2a": null
+      },
+      "kwargs": {
+      }
+    }
+  },
+  "optimizer": {
+    "generator": {
+      "lr": 1e-4
+    },
+    "discriminator": {
+      "lr": 1e-4
+    }
+  },
+  "save_interval": {
+    "evaluate": 1,
+    "model": 50
+  }
+}

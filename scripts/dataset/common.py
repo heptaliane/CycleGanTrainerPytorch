@@ -7,7 +7,7 @@ class DatasetDirectory():
     def __init__(self, dirpath, ext='', rm_ext=True):
         self._path = dirpath
         self.ext = ext
-        self_rm_ext = rm_ext
+        self._rm_ext = rm_ext
 
         os.makedirs(dirpath, exist_ok=True)
 

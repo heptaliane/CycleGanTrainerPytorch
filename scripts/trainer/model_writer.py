@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import math
+from collections import deque
 
 import torch
 
@@ -31,7 +32,7 @@ class BestModelWriter():
 
 class LocalBestModelWriter():
     def __init__(self, save_dir, label='model', epochs=10):
-        self._dst_path = os.path.join(save_dir, 'local_best_%s.pth' % name)
+        self._dst_path = os.path.join(save_dir, 'local_best_%s.pth' % label)
         self._loss = deque([float('inf')], epochs)
         os.makedirs(save_dir, exist_ok=True)
 
@@ -51,7 +52,7 @@ class LocalBestModelWriter():
         self._loss.append(loss)
 
 
-class RegularModelSaver():
+class RegularModelWriter():
     def __init__(self, save_dir, label='model', interval=50):
         self._name_fmt = '%s_epoch_%s.pth' % (label, '%05d')
         self._save_dir = save_dir

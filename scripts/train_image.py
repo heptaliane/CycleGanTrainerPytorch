@@ -26,7 +26,7 @@ def parse_arguments(argv):
                         help='Path to output directory')
     parser.add_argument('--gpu', '-g', type=int, default=None,
                         help='GPU id (default is cpu)')
-    parser.add_argument('--labels', '-l', required=True, nargs='2',
+    parser.add_argument('--labels', '-l', required=True, nargs=2,
                         help='Training dataset label')
     parser.add_argument('--max_epoch', '-m', type=int, default=-1,
                         help='When the epoch reach this value, stop training,')
@@ -80,28 +80,28 @@ def setup_model(config):
     in_ch = gen_conf.get('in_ch')
     out_ch = gen_conf.get('out_ch')
 
-    gen_a2b = create_model(arch, in_ch, out_ch,
+    gen_a2b = create_generator(arch, in_ch, out_ch,
                            gen_conf['pretrained']['a2b'],
                            **gen_conf['kwargs'])
-    gen_b2a = create_model(arch, out_ch, in_ch,
+    gen_b2a = create_generator(arch, out_ch, in_ch,
                            gen_conf['pretrained']['b2a'],
                            **gen_conf['kwargs'])
 
     # Create discriminator
     arch = dis_conf.get('arch')
-    dis_a2b = PatchDiscriminator(arch, in_ch, dis_conf['pretrained']['a2b'],
-                                 **dis_conf['kwargs'])
-    dis_b2a = PatchDiscriminator(arch, out_ch, dis_conf['pretrained']['b2a'],
-                                 **dis_conf['kwargs'])
+    dis_a2b = create_discriminator(arch, in_ch, dis_conf['pretrained']['a2b'],
+                                   **dis_conf['kwargs'])
+    dis_b2a = create_discriminator(arch, out_ch, dis_conf['pretrained']['b2a'],
+                                   **dis_conf['kwargs'])
 
     if config['optimizer']['generator'] is not None:
-        gen_optimizer = Adam(gen_a2b.parameters(), gen_b2a.parameters(),
+        gen_optimizer = Adam([*gen_a2b.parameters(), *gen_b2a.parameters()],
                              **config['optimizer']['generator'])
     else:
         gen_optimizer = None
 
     if config['optimizer']['discriminator'] is not None:
-        dis_optimizer = Adam(dis_a2b.parameters(), dis_b2a.parameters(),
+        dis_optimizer = Adam([*dis_a2b.parameters(), *dis_b2a.parameters()],
                              **config['optimizer']['discriminator'])
     else:
         dis_optimizer = None
@@ -109,8 +109,8 @@ def setup_model(config):
     return {
         'gen_a2b': gen_a2b,
         'gen_b2a': gen_b2a,
-        'dis_a': dis_b2a,
-        'dis_b': dis_a2b,
+        'dis_a2b': dis_a2b,
+        'dis_b2a': dis_b2a,
         'gen_optimizer': gen_optimizer,
         'dis_optimizer': dis_optimizer,
     }

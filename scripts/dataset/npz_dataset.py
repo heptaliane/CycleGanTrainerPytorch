@@ -1,6 +1,8 @@
 # -*-coding: utf-8 -*-
 import numpy as np
 
+from torch.utils.data import Dataset
+
 
 class NpzDataset(Dataset):
     def __init__(self, directory, transform):

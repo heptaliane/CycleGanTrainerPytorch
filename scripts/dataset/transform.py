@@ -25,4 +25,4 @@ def setup_image_transform(img_size=None, flip=None, scale=None, jitter=None):
 
     trans.append(transforms.ToTensor())
 
-    return trans
+    return transforms.Compose(trans)

@@ -7,12 +7,17 @@ from .common import LoopIterator
 from .model_writer import BestModelWriter, LocalBestModelWriter, \
                           RegularModelWriter
 
+# Logging
+from logging import getLogger, NullHandler
+logger = getLogger(__name__)
+logger.addHandler(NullHandler())
+
 
 class CycleGanTrainer():
     def __init__(self, save_dir, train_loader_a, train_loader_b,
                  test_loader_a, test_loader_b,
                  gen_a2b, gen_b2a,
-                 dis_a, dis_b, gen_optimizer=None, dis_optimizer=None,
+                 dis_a2b, dis_b2a, gen_optimizer=None, dis_optimizer=None,
                  label_a=None, label_b=None, device=None, interval=50,
                  evaluator=None):
         self.device = torch.device('cpu') if device is None else device
@@ -29,7 +34,7 @@ class CycleGanTrainer():
         self.dis_loss = torch.nn.BCELoss()
         self.gen_loss = torch.nn.L1Loss()
         self.evaluator = evaluator
-        self.batch_size = train_loader.batch_size
+        self.batch_size = train_loader_a.batch_size
         self.epoch = 0
 
         # Setup writer
@@ -72,15 +77,15 @@ class CycleGanTrainer():
 
     def _train(self):
         if self.dis_optimizer is not None:
-            self.dis_a.train()
-            self.dis_b.train()
+            self.dis_a2b.train()
+            self.dis_b2a.train()
         if self.gen_optimizer is not None:
             self.gen_a2b.train()
             self.gen_b2a.train()
 
     def _eval(self):
-        self.dis_a.eval()
-        self.dis_b.eval()
+        self.dis_a2b.eval()
+        self.dis_b2a.eval()
         self.gen_a2b.eval()
         self.gen_b2a.eval()
 

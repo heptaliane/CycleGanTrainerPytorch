@@ -14,7 +14,6 @@
       "horizontal": true,
       "vertical": true
     },
-    "img_size": [450, 800],
     "scale": [0.8, 1.0],
     "jitter": {
       "brightness": 0.05,
@@ -53,14 +52,17 @@
   },
   "optimizer": {
     "generator": {
-      "lr": 1e-4
+      "lr": 1e-4,
+      "betas": [0.5, 0.999]
     },
     "discriminator": {
-      "lr": 1e-4
+      "lr": 1e-4,
+      "betas": [0.5, 0.999]
     }
   },
   "save_interval": {
     "evaluate": 1,
     "model": 50
-  }
+  },
+  "img_size": [450, 800]
 }

@@ -40,22 +40,26 @@ class CycleGanTrainer():
         # Setup writer
         lbl_a = 'A' if label_a is None else label_a
         lbl_b = 'B' if label_b is None else label_b
+        gen_lbl_a2b = 'G_%s2%s' % (lbl_a, lbl_b)
+        gen_lbl_b2a = 'G_%s2%s' % (lbl_b, lbl_a)
+        dis_lbl_a = 'D_%s' % lbl_a
+        dis_lbl_b = 'D_%s' % lbl_b
         if dis_optimizer is None:
-            self.gen_a_writer = BestModelWriter(save_dir, 'G_%s' % lbl_a)
-            self.gen_b_writer = BestModelWriter(save_dir, 'G_%s' % lbl_b)
+            self.gen_a_writer = BestModelWriter(save_dir, gen_lbl_a2b)
+            self.gen_b_writer = BestModelWriter(save_dir, gen_lbl_b2a)
         else:
-            self.gen_a_writer = LocalBestModelWriter(save_dir, 'G_%s' % lbl_a)
-            self.gen_b_writer = LocalBestModelWriter(save_dir, 'G_%s' % lbl_b)
+            self.gen_a_writer = LocalBestModelWriter(save_dir, gen_lbl_a2b)
+            self.gen_b_writer = LocalBestModelWriter(save_dir, gen_lbl_b2a)
             self.reg_dis_a_writer = RegularModelWriter(
                 save_dir, 'D_%s' % lbl_a, interval)
             self.reg_dis_b_writer = RegularModelWriter(
                 save_dir, 'D_%s' % lbl_b, interval)
         if gen_optimizer is None:
-            self.dis_a_writer = BestModelWriter(save_dir, 'D_%s' % lbl_a)
-            self.dis_b_writer = BestModelWriter(save_dir, 'D_%s' % lbl_b)
+            self.dis_a_writer = BestModelWriter(save_dir, dis_lbl_a)
+            self.dis_b_writer = BestModelWriter(save_dir, dis_lbl_b)
         else:
-            self.dis_a_writer = LocalBestModelWriter(save_dir, 'D_%s' % lbl_a)
-            self.dis_b_writer = LocalBestModelWriter(save_dir, 'D_%s' % lbl_b)
+            self.dis_a_writer = LocalBestModelWriter(save_dir, dis_lbl_a)
+            self.dis_b_writer = LocalBestModelWriter(save_dir, dis_lbl_b)
             self.reg_gen_a_writer = RegularModelWriter(
                 save_dir, 'G_%s' % lbl_a, interval)
             self.reg_gen_b_writer = RegularModelWriter(

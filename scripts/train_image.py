@@ -125,10 +125,8 @@ def setup_trainer(config, save_dir, device, datasets, models, labels):
     evaluator = CycleGanImageEvaluator(save_dir,
                                        config['save_interval']['evaluate'])
     interval = config['save_interval']['model']
-    lbl_a = '%s2%s' % (labels[0], labels[1])
-    lbl_b = '%s2%s' % (labels[1], labels[0])
     trainer = CycleGanTrainer(save_dir, **datasets, **models,
-                              label_a=lbl_a, label_b=lbl_b,
+                              label_a=labels[0], label_b=labels[1],
                               device=device, evaluator=evaluator,
                               interval=interval)
 
@@ -147,7 +145,7 @@ def main(argv):
     datasets = setup_dataset(config, args.labels[0], args.labels[1])
     models = setup_model(config)
     trainer = setup_trainer(config, dst_dir, args.gpu,
-                            datasets, models)
+                            datasets, models, args.labels)
     trainer.run(1000, args.max_epoch)
 
 

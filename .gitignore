@@ -2,4 +2,5 @@
 *.log
 *.swp
 data/
+result/
 __pycache__/
